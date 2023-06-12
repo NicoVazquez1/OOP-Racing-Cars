@@ -8,6 +8,6 @@ namespace Relaciones_entre_clases.Objects
 {
     interface ITelemetrySystem
     {
-        string GetTelemetryData(float battery, int time, int distance);
+        string GetTelemetryData(float battery, float time, int distance);
     }
 }

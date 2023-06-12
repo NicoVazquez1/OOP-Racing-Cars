@@ -10,7 +10,7 @@ namespace Relaciones_entre_clases.Cars
     //INHERITANCE
     public class FirstNewModelCar : ClassicModelCar, ITelemetrySystem
     {
-        protected override float Mass { get; set; } = 300;
+        protected override float Mass { get; set; } = 500;
         readonly string fileModel_path = "C:\\Users\\Nico\\source\\repos\\Relaciones entre clases\\FirstNewModel.txt";
         public FirstNewModelCar(int enginesNum, Battery battery) : base(enginesNum, battery)
         {
@@ -18,7 +18,7 @@ namespace Relaciones_entre_clases.Cars
         }
 
         //IMPLEMENTATION
-        public string GetTelemetryData(float batteryPercent, int time, int distance)
+        public string GetTelemetryData(float batteryPercent, float time, int distance)
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.DarkCyan;

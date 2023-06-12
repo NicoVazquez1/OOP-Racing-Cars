@@ -12,16 +12,13 @@ namespace Relaciones_entre_clases.Cars
     {
         public int X { get; set; } = 1;
         public int Y { get; set; }
-        public int Identifier { get; set; }
         float speed;
         public float Speed
         {
             get => speed;
-            set => speed = Math.Max(Math.Min(value, 100), 0.0f);
+            set => speed = Math.Max(value, 0.0f);
         }
-        public virtual void Accelerate()
-        {
-            
-        }
+        public abstract void Accelerate();
+      
     }
 }

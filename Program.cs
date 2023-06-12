@@ -13,18 +13,23 @@ Console.WriteLine($"{welcomeTitle} \n");
 Console.ReadKey();
 #endregion
 
-Battery smallBattery = new Battery(40, "Small battery");
-Battery mediumBattery = new Battery(160, "Medium battery");
-Battery bigBattery = new Battery(240, "Big battery");
-Battery SuperBattery = new Battery(940, "SuperBattery");
+Battery smallBattery = new Battery(1800, "Small battery");
+Battery mediumBattery = new Battery(2800, "Medium battery");
+Battery mediumBattery2 = new Battery(2800, "Medium battery");
+Battery mediumbattery3 = new Battery(2800, "Medium battery");
+Battery bigBattery = new Battery(4000, "Big battery");
+
+Charger SlowCharger = new Charger(8, 7);
+Charger StandarCharger = new Charger(16, 3);
+Charger turboCharger = new Charger(30, 1);
 
 #region GameConfigurations
 
-int start = 90;
-int end = 100;
+int start = 550;
+int end = 560;
 int intervalOfZones = 100;
 List<int> batteryZones = new List<int>();
-int raceLenght = 245; //240
+int raceLenght = 900;
 bool HasSelectOptions = false;
 Charger? chargerSelected = null;
 int batteryPercent = 0;
@@ -32,7 +37,7 @@ float rechargeAmount = 0;
 float rechargePercentage;
 int distanceRange = 0;
 int playerCount = 1;
-int winnerTime = 600;
+float winnerTime = (float) int.MaxValue;
 int winnerplayer;
 
 for (int i = 0; i < 8; i++)
@@ -46,16 +51,15 @@ for (int i = 0; i < 8; i++)
 #endregion 
 
 //INHERITANCE - LISKOV SUBSTITUTION PRINCIPLE
-ClassicModelCar player1 = new ClassicModelCar(2, SuperBattery);
-ClassicModelCar player2 = new FirstNewModelCar(3, SuperBattery);
-ClassicModelCar player3 = new SecondNewModelCar(3, SuperBattery);
+ClassicModelCar player1 = new ClassicModelCar(2, mediumBattery);
+ClassicModelCar player2 = new FirstNewModelCar(3, mediumBattery2);
+ClassicModelCar player3 = new SecondNewModelCar(3, bigBattery);
 
+//Not good practice, violation of single responsability principle
 string ComputeTurn(ClassicModelCar player)
 {
-    int time = 0;
-    Charger SlowCharger = new Charger(8, 7);
-    Charger StandarCharger = new Charger(14, 3);
-    Charger turboCharger = new Charger(24, 1);
+    float frame = 0;
+    float time = 0;
     Console.Clear();
     Console.WriteLine($"Player {playerCount} Ready");
     Console.WriteLine("Press any key to start");
@@ -71,6 +75,7 @@ string ComputeTurn(ClassicModelCar player)
     string animation = "";
     int steps = 0;
     bool moveDown = true;
+    int carPositionPercent;
 
     List<string> answers = new List<string>
     {
@@ -87,15 +92,21 @@ string ComputeTurn(ClassicModelCar player)
 
     while (!raceFinised)
     {
+
+       
+
         canCharge = batteryZones.Contains(distanceMade);
-        time++;
+        frame++;
+        time = frame / 30;
         Console.Clear();
         Console.WriteLine($"Player {playerCount} \n");
-        distanceMade = player.X;
+        distanceMade = player.X / 10;
 
         #region Menu expecializado
        
         string chargerSelectionTitle = "Select your charger";
+
+        
 
         if (waitUltilAsk == 3)
             waitUltilAsk = 1;
@@ -174,7 +185,7 @@ string ComputeTurn(ClassicModelCar player)
                 {
                     Console.Clear();
                     Console.WriteLine("Current battery level: " + batteryPercent + "%");
-                    Console.WriteLine("Time passed: " + ChargingTime);
+                    Console.WriteLine("Time passed: " + ChargingTime / 30);
                     Console.WriteLine("Your vehicle is ready, GO!");
                     Console.ReadKey();
                     recharging = false;
@@ -190,23 +201,14 @@ string ComputeTurn(ClassicModelCar player)
             }
         }
 
+        string ShowCarInfo(ITelemetrySystem telemetry) => telemetry.GetTelemetryData(batteryPercent, time, distanceMade);
+
+        if (player is FirstNewModelCar || player is SecondNewModelCar) Console.WriteLine(ShowCarInfo((ITelemetrySystem)player));
+
         InitRechargingProcess();
-
-        string ShowCarInfo(ITelemetrySystem telemetry)
-        {
-            return telemetry.GetTelemetryData(batteryPercent, time, distanceMade);
-        }
-
-        if (player is FirstNewModelCar || player is SecondNewModelCar)
-        {
-            Console.WriteLine(ShowCarInfo((ITelemetrySystem)player));
-        }
 
         player.Accelerate();
         batteryPercent = (int)(player.Battery.Level / (player.Battery.Capacity / 100f));
-        int screenWidth = Console.LargestWindowWidth;
-        int carPosition = player.X;
-
         Console.WriteLine();
 
         if (moveDown)
@@ -230,7 +232,7 @@ string ComputeTurn(ClassicModelCar player)
 
         Console.WriteLine(animation + player.Chassis);
 
-        if (player is SecondNewModelCar secondNewModelCar && distanceMade >= 105 && askedForTurboMode == false)
+        if (player is SecondNewModelCar secondNewModelCar && distanceMade > 580 && askedForTurboMode == false)
         {
             string answer = Menu.DisplayMenuOptions(answers, "Do you want to activate turbo mode?");
             if (answer == "Yes")
@@ -245,12 +247,24 @@ string ComputeTurn(ClassicModelCar player)
             Console.WriteLine("You run out of battery!!");
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
-            return $"Player {playerCount++} \n Did to finished";
+            return $"Player {playerCount++} \n Did not finish";
         }
 
+        int screenWidth = Console.LargestWindowWidth;
+        int raceLengthPercent = (int)(raceLenght / raceLenght) * 100;
+        carPositionPercent = (distanceMade  * 100) / raceLenght;
         string raceProgressVisualization = "";
-        for (int j = 0; j < carPosition; j ++)
-            raceProgressVisualization += "▒";
+        for (int j = 0; j < raceLengthPercent; j ++)
+            raceProgressVisualization += "░";
+
+        try
+        {
+            raceProgressVisualization = raceProgressVisualization.Remove(carPositionPercent, 1).Insert(carPositionPercent, "█");
+        }
+        catch (ArgumentOutOfRangeException ex)
+        {
+            Console.WriteLine("Race completed");
+        }
 
         Console.WriteLine(raceProgressVisualization);
 
@@ -272,7 +286,7 @@ string ComputeTurn(ClassicModelCar player)
             }
 
         }
-        Thread.Sleep(20);
+        Thread.Sleep(32);
     }
     raceFinised = false;
 
@@ -286,14 +300,13 @@ team1.Add(player2);
 team1.Add(player3);
 team1.Add(player1);
 
-
 foreach (var player in team1)
     scores.Add(ComputeTurn(player));
 
 foreach (var score in scores)
     Console.WriteLine("\n" + score);
 
-Console.WriteLine($"\n + {winnerTitle} \n {CongratulationTitle}\n");
+Console.WriteLine($"\n  {winnerTitle} \n {CongratulationTitle}\n");
 
 
 

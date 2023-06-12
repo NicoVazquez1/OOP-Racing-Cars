@@ -10,7 +10,7 @@ namespace Relaciones_entre_clases.Cars
     //INHERITANCE
     public class SecondNewModelCar : ClassicModelCar, ITelemetrySystem
     {
-        protected override float Mass { get; set; } = 380;
+        protected override float Mass { get; set; } = 580;
         public bool TurboModeEnabled { get; set; }
         private readonly string fileModel_path = "C:\\Users\\Nico\\source\\repos\\Relaciones entre clases\\SecondNewModel.txt";
         private readonly string fileModelTurboMode_path = "C:\\Users\\Nico\\source\\repos\\Relaciones entre clases\\SecondNewModel_Turbo.txt";
@@ -22,6 +22,7 @@ namespace Relaciones_entre_clases.Cars
         {
             TurboModeEnabled = true;
             Console.WriteLine("Turbo mode activated!");
+            
         }
 
         public void DeactivateTurboMode()
@@ -49,9 +50,15 @@ namespace Relaciones_entre_clases.Cars
             {
                 if (engine.On)
                 {
+                    if (TurboModeEnabled)
+                    {
+                        acceleration *= 1.7f;
+                        Battery.Level -= engine.UpdateBatteryConsume() * 1.1f;
+                        Chassis = File.ReadAllText(fileModelTurboMode_path);
+                    }
                     acceleration += engine.Accelerate(Weight);
                     Battery.Level -= engine.UpdateBatteryConsume();
-                    Weight += Speed;
+                    Weight += Speed / 5;
                 }
                 else
                 {
@@ -60,19 +67,13 @@ namespace Relaciones_entre_clases.Cars
                 }
             }
 
-            if (TurboModeEnabled)
-            {
-                acceleration *= 2.5f;
-                Chassis = File.ReadAllText(fileModelTurboMode_path);
-            }
-
             Speed += acceleration;
             distance = Speed / 10;
             X += (int)distance;
         }
 
         //IMPLEMENTATION
-        public string GetTelemetryData(float batteryPercent, int time, int distance)
+        public string GetTelemetryData(float batteryPercent, float time, int distance)
         {
             if (TurboModeEnabled)
             {
@@ -80,8 +81,11 @@ namespace Relaciones_entre_clases.Cars
                 Console.ForegroundColor = ConsoleColor.Red;
             }
             else
+            {
+                Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.Yellow;
-
+            }
+              
             string batteryVisualization = "Battery: ";
 
             for (int j = 0; j < batteryPercent; j += 4)

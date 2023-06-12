@@ -8,7 +8,7 @@ namespace Relaciones_entre_clases.Objects
 {
     public class Battery
     {
-        public float Capacity { get; set; } = 200;
+        public float Capacity { get; set; } = 2000;
         public float Mass { get; set; }
         public string Name { get; set; }
         float level;

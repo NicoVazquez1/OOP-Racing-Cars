@@ -14,7 +14,7 @@ namespace Relaciones_entre_clases.Cars
         public Booster[] Boosters { get; set; }
         public Battery Battery { get; set; }
         #region
-        protected virtual float Mass { get; set; } = 640;
+        protected virtual float Mass { get; set; } = 1240;
         public float Weight { get; set; }
         readonly string fileModel_path = "C:\\Users\\Nico\\source\\repos\\Relaciones entre clases\\ClassicModel.txt";
         public string Chassis { get; set; }
@@ -71,7 +71,7 @@ namespace Relaciones_entre_clases.Cars
                 {
                     acceleration += engine.Accelerate(Weight);
                     Battery.Level -= engine.UpdateBatteryConsume();
-                    Weight += Speed;
+                    Weight += Speed / 5;
                 }
                 else
                 {

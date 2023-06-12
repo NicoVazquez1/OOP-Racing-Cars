@@ -9,7 +9,7 @@ namespace Relaciones_entre_clases.Objects
 {
     public class Booster
     {
-        private float strength = 1050;
+        private float strength = 950;
         public bool On { get; set; }
         public float Consume = 3;
         public float mass = 20;
